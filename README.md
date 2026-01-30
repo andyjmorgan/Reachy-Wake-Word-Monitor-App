@@ -85,6 +85,8 @@ The application uses a pipeline approach for wake word detection:
 
 ### ONNX Models
 
+The wake word models are sourced from [reachy-wake-word](https://github.com/andyjmorgan/reachy-wake-word):
+
 - `melspectrogram.onnx` - Audio to mel spectrogram conversion
 - `embedding_model.onnx` - Spectrogram to embedding conversion
 - `reechy_wakeword.onnx` - Wake word classification
@@ -115,4 +117,5 @@ MIT License
 ## Acknowledgments
 
 - Built for [Pollen Robotics](https://www.pollen-robotics.com/) Reachy robots
+- Wake word models from [reachy-wake-word](https://github.com/andyjmorgan/reachy-wake-word)
 - Wake word detection based on [openWakeWord](https://github.com/dscripka/openWakeWord)
