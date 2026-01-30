@@ -13,7 +13,11 @@ A Flutter desktop application for real-time wake word detection monitoring on Re
 
 ## Screenshots
 
-![Reachy WakeWord Monitor](docs/screenshot.png)
+### Listening Mode
+![Listening Mode](screenshots/listening.png)
+
+### Wake Word Detected
+![Detections](screenshots/detected.png)
 
 ## Requirements
 
