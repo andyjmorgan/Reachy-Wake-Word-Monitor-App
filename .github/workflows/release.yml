@@ -7,46 +7,53 @@ on:
     branches: [main]
 
 jobs:
-  build-and-release-linux:
+  release:
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push' }}
     permissions:
       contents: write
     steps:
       - uses: actions/checkout@v4
-
-      - name: Install Linux dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev libstdc++-12-dev
-
-      - name: Setup Flutter
-        uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.29.2'
-          channel: 'stable'
+          fetch-depth: 0
 
-      - name: Get dependencies
-        run: flutter pub get
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: linux-build
+          path: bundle
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ github.event.workflow_run.id }}
 
-      - name: Build Linux
-        run: flutter build linux --release
+      - name: Generate version
+        id: version
+        run: |
+          VERSION="v$(date +'%Y.%m.%d')-$(echo ${{ github.event.workflow_run.head_sha }} | cut -c1-7)"
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Generated version: $VERSION"
 
       - name: Create release bundle
         run: |
-          cd build/linux/x64/release/bundle
-          tar -czvf ../../../../../reachy-wakeword-monitor-linux-x64.tar.gz .
+          cd bundle
+          tar -czvf ../reachy-wakeword-monitor-linux-x64.tar.gz .
 
-      - name: Create or update release
+      - name: Create release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: latest
-          name: Latest Build
+          tag_name: ${{ steps.version.outputs.version }}
+          name: Release ${{ steps.version.outputs.version }}
           body: |
-            Automated build from main branch.
+            ## Reachy WakeWord Monitor
 
-            Commit: ${{ github.sha }}
+            Automated release from main branch.
+
+            **Commit:** ${{ github.event.workflow_run.head_sha }}
+
+            ### Installation
+            1. Download `reachy-wakeword-monitor-linux-x64.tar.gz`
+            2. Extract: `tar -xzvf reachy-wakeword-monitor-linux-x64.tar.gz`
+            3. Run: `./reechy_wakeword_monitor`
           files: reachy-wakeword-monitor-linux-x64.tar.gz
-          prerelease: true
+          generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
