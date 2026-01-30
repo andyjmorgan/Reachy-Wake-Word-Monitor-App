@@ -17,11 +17,19 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Download build artifact
+      - name: Download Linux build artifact
         uses: actions/download-artifact@v4
         with:
           name: linux-build
-          path: bundle
+          path: linux-bundle
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ github.event.workflow_run.id }}
+
+      - name: Download macOS build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: macos-build
+          path: macos-bundle
           github-token: ${{ secrets.GITHUB_TOKEN }}
           run-id: ${{ github.event.workflow_run.id }}
 
@@ -32,10 +40,12 @@ jobs:
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "Generated version: $VERSION"
 
-      - name: Create release bundle
+      - name: Create release bundles
         run: |
-          cd bundle
+          cd linux-bundle
           tar -czvf ../reachy-wakeword-monitor-linux-x64.tar.gz .
+          cd ../macos-bundle
+          zip -r ../reachy-wakeword-monitor-macos.zip .
 
       - name: Create release
         uses: softprops/action-gh-release@v1
@@ -49,11 +59,22 @@ jobs:
 
             **Commit:** ${{ github.event.workflow_run.head_sha }}
 
+            ### Downloads
+            - **Linux (x64):** `reachy-wakeword-monitor-linux-x64.tar.gz`
+            - **macOS:** `reachy-wakeword-monitor-macos.zip`
+
             ### Installation
-            1. Download `reachy-wakeword-monitor-linux-x64.tar.gz`
-            2. Extract: `tar -xzvf reachy-wakeword-monitor-linux-x64.tar.gz`
-            3. Run: `./reechy_wakeword_monitor`
-          files: reachy-wakeword-monitor-linux-x64.tar.gz
+
+            **Linux:**
+            1. Extract: `tar -xzvf reachy-wakeword-monitor-linux-x64.tar.gz`
+            2. Run: `./reechy_wakeword_monitor`
+
+            **macOS:**
+            1. Extract: `unzip reachy-wakeword-monitor-macos.zip`
+            2. Move the app to Applications or run directly
+          files: |
+            reachy-wakeword-monitor-linux-x64.tar.gz
+            reachy-wakeword-monitor-macos.zip
           generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -26,24 +26,33 @@ A Flutter desktop application for real-time wake word detection monitoring on Re
 - GTK 3.0+
 - PulseAudio or PipeWire
 
+### macOS
+- macOS 10.14 (Mojave) or later
+
 ### Development
-- Flutter 3.24.0+
-- Dart SDK
+- Flutter 3.38.8+
+- Dart SDK 3.10.7+
 - Linux build tools: `clang`, `cmake`, `ninja-build`, `pkg-config`, `libgtk-3-dev`
+- macOS: Xcode command line tools
 
 ## Installation
 
 ### From Release
 
-1. Download the latest release from [Releases](https://github.com/andyjmorgan/Reachy-Wake-Word-Monitor-App/releases)
-2. Extract the archive:
-   ```bash
-   tar -xzvf reachy-wakeword-monitor-linux-x64.tar.gz
-   ```
-3. Run the application:
-   ```bash
-   ./reechy_wakeword_monitor
-   ```
+Download the latest release from [Releases](https://github.com/andyjmorgan/Reachy-Wake-Word-Monitor-App/releases)
+
+**Linux:**
+```bash
+tar -xzvf reachy-wakeword-monitor-linux-x64.tar.gz
+./reechy_wakeword_monitor
+```
+
+**macOS:**
+```bash
+unzip reachy-wakeword-monitor-macos.zip
+# Move to Applications or run directly
+open reechy_wakeword_monitor.app
+```
 
 ### Build from Source
 
