@@ -1,12 +1,15 @@
 name: Release
 
 on:
-  release:
-    types: [published]
+  workflow_run:
+    workflows: ["Build"]
+    types: [completed]
+    branches: [main]
 
 jobs:
   build-and-release-linux:
     runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     permissions:
       contents: write
     steps:
@@ -34,9 +37,16 @@ jobs:
           cd build/linux/x64/release/bundle
           tar -czvf ../../../../../reachy-wakeword-monitor-linux-x64.tar.gz .
 
-      - name: Upload release asset
+      - name: Create or update release
         uses: softprops/action-gh-release@v1
         with:
+          tag_name: latest
+          name: Latest Build
+          body: |
+            Automated build from main branch.
+
+            Commit: ${{ github.sha }}
           files: reachy-wakeword-monitor-linux-x64.tar.gz
+          prerelease: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
